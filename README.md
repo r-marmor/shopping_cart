@@ -1,1 +1,3 @@
-# shopping_cart
+# Shopping cart in React
+
+Simple shopping cart using React
