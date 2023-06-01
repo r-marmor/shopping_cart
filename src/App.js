@@ -15,9 +15,39 @@ function App() {
     }))
   );
 
-  const handleAddToCartClick = (id) => {
-
+  const handleIncreaseQuantityClick = (id) => {
+    const newItems = items.map(item => {
+      if (item.id === id) {
+        return { ...item, quantity: item.quantity + 1};
+      } else {
+        return item;
+      }
+    });
+    setItems(newItems);
   }
+
+  const handleDecreaseQuantityClick = (id) => {
+    const newItems = items.map(item => {
+      if (item.id === id) {
+        return { ...item, quantity: item.quantity - 1}
+      } else {
+        return item;
+      }
+    });
+    setItems(newItems);
+  }
+
+  const handleRemoveClick = (id) => {
+    const newItems = items.map(item => {
+      if (item.id === id) {
+        return { ...item, quantity: 0}
+      } else {
+        return item;
+      }
+    });
+    setItems(newItems)
+  }
+
   
   return (
     <div className='mainContainer'>
@@ -25,7 +55,16 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path="/about" element={<About />}></Route>
-          <Route path="/shop" element={<Shop items={items} setItems={setItems} />}></Route>
+          <Route 
+            path="/shop" 
+            element={
+              <Shop 
+                items={items} 
+                handleIncreaseQuantityClick={handleIncreaseQuantityClick}
+                handleDecreaseQuantityClick={handleDecreaseQuantityClick}
+                handleRemoveClick={handleRemoveClick}
+              />}>
+          </Route>
         </Routes>
     </div>
   )
