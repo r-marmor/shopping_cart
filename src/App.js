@@ -4,6 +4,7 @@ import NavBar from './Components/NavBar';
 import Home from './Components/Home'
 import About from './Components/About';
 import Shop from './Components/Shop';
+import Cart from './Components/Cart';
 import { useState } from 'react';
 import { fakeData } from './data/fakeData';
 
@@ -15,6 +16,16 @@ function App() {
     }))
   );
 
+  const [totalItems, setTotalItems] = useState(0);
+
+  const getTotalItems = (items) => {
+    return items.reduce((total, item) => total + item.quantity, 0);
+  }
+
+  const getTotalAmount = (items) => {
+    return items.reduce((total, item) => total + item.quantity * item.price, 0);
+  }
+  
   const handleIncreaseQuantityClick = (id) => {
     const newItems = items.map(item => {
       if (item.id === id) {
@@ -23,7 +34,9 @@ function App() {
         return item;
       }
     });
-    setItems(newItems);
+    const newTotalItems = getTotalItems(newItems);
+    setItems(newItems)
+    setTotalItems(newTotalItems)
   }
 
   const handleDecreaseQuantityClick = (id) => {
@@ -34,7 +47,9 @@ function App() {
         return item;
       }
     });
-    setItems(newItems);
+    const newTotalItems = getTotalItems(newItems);
+    setItems(newItems)
+    setTotalItems(newTotalItems)
   }
 
   const handleRemoveClick = (id) => {
@@ -45,19 +60,18 @@ function App() {
         return item;
       }
     });
+    const newTotalItems = getTotalItems(newItems);
     setItems(newItems)
+    setTotalItems(newTotalItems)
   }
 
-  
   return (
     <div className='mainContainer'>
-      <NavBar />
+      <NavBar totalItems={totalItems} />
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path="/about" element={<About />}></Route>
-          <Route 
-            path="/shop" 
-            element={
+          <Route path="/shop" element={
               <Shop 
                 items={items} 
                 handleIncreaseQuantityClick={handleIncreaseQuantityClick}
@@ -65,6 +79,7 @@ function App() {
                 handleRemoveClick={handleRemoveClick}
               />}>
           </Route>
+          <Route path="/cart" element={<Cart items={items} getTotalAmount={getTotalAmount} handleRemoveClick={handleRemoveClick} />} ></Route>
         </Routes>
     </div>
   )

@@ -24,7 +24,6 @@ html {
     list-style: none;
   }
   
-
   /* NAV BAR */
 
   .navBar {
@@ -37,6 +36,10 @@ html {
     background-color: white;
     height: 8vh;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .bold {
+    font-weight: bold;
   }
 
   .navBarMenu p {
@@ -89,7 +92,6 @@ html {
     right: 0;
     transform: translate(20%, 20%);
   }
-
 
   /* MAIN CONTENT */
 
@@ -152,13 +154,49 @@ html {
     margin: 0 20px !important; 
   }
 
+  .cartContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    align-items: center;
+    margin: 50px 0;
+    justify-content: flex-start;
+    min-height: calc(92vh - 100px);
+  }
+  
+  .cartCard {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    height: 150px;
+    width: 550px;
+  }
+
+  .imgCart {
+    width: 250px;
+  }
+
+  .cartCardDesc {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .totalCart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    width: 100%;
+    height: 150px;
+  }
+
   
   @media screen and (min-width: 768px) {
     .itemsContainer {
-      grid-template-rows: 1fr;
       grid-template-columns: repeat(2, 1fr);
-    
     }
+
   }
 
   @media screen and (min-width: 1440px) {
@@ -166,4 +204,5 @@ html {
       grid-template-rows: 1fr;
       grid-template-columns: repeat(3, 1fr);
     }
+
   }
