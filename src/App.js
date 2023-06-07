@@ -1,87 +1,81 @@
-import './App.css';
-import { Routes, Route } from 'react-router-dom';
-import NavBar from './Components/NavBar';
-import Home from './Components/Home'
-import About from './Components/About';
-import Shop from './Components/Shop';
-import Cart from './Components/Cart';
-import { useState } from 'react';
-import { fakeData } from './data/fakeData';
+import { Routes, Route } from "react-router-dom";
+import { Container } from "react-bootstrap";
+import Home from "./pages/Home";
+import Store from "./pages/Store";
+import About from "./pages/About";
+import Navbar  from "./components/Navbar";
+import { useEffect, useMemo, useState } from "react";
+import itemsData from "./data/item.json"
 
 function App() {
-  const [items, setItems] = useState(
-    fakeData.map(item => ({
-      ...item,
-      quantity: 0
-    }))
-  );
+  const initialItems = JSON.parse(localStorage.getItem('cart')) || itemsData.map(item => ({
+    ...item,
+    quantity: 0
+  }));
 
-  const [totalItems, setTotalItems] = useState(0);
+  const [items, setItems] = useState(initialItems);
+
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(items));
+  }, [items]);
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleItemUpdate = (id, operation) => {
+    const newItems = items.map(item => {
+      if (item.id === id) {
+          switch (operation) {
+              case 'increase':
+                  return { ...item, quantity: item.quantity + 1 };
+              case 'decrease':
+                  return item.quantity > 0 ? { ...item, quantity: item.quantity - 1 } : item;
+              case 'remove':
+                  return { ...item, quantity: 0 };
+              default:
+                  return item;
+          }
+      } else {
+          return item;
+      }
+    })
+    setItems(newItems) 
+}
 
   const getTotalItems = (items) => {
     return items.reduce((total, item) => total + item.quantity, 0);
   }
 
-  const getTotalAmount = (items) => {
-    return items.reduce((total, item) => total + item.quantity * item.price, 0);
-  }
-  
-  const handleIncreaseQuantityClick = (id) => {
-    const newItems = items.map(item => {
-      if (item.id === id) {
-        return { ...item, quantity: item.quantity + 1};
-      } else {
-        return item;
-      }
-    });
-    const newTotalItems = getTotalItems(newItems);
-    setItems(newItems)
-    setTotalItems(newTotalItems)
-  }
+  const totalItems = useMemo(() => getTotalItems(items), [items]);
 
-  const handleDecreaseQuantityClick = (id) => {
-    const newItems = items.map(item => {
-      if (item.id === id) {
-        return { ...item, quantity: item.quantity - 1}
-      } else {
-        return item;
-      }
-    });
-    const newTotalItems = getTotalItems(newItems);
-    setItems(newItems)
-    setTotalItems(newTotalItems)
-  }
+  const  openCart = () => setIsOpen(true);
 
-  const handleRemoveClick = (id) => {
-    const newItems = items.map(item => {
-      if (item.id === id) {
-        return { ...item, quantity: 0}
-      } else {
-        return item;
-      }
-    });
-    const newTotalItems = getTotalItems(newItems);
-    setItems(newItems)
-    setTotalItems(newTotalItems)
-  }
+  const  closeCart = () => setIsOpen(false);
 
   return (
-    <div className='mainContainer'>
-      <NavBar totalItems={totalItems} />
-        <Routes>
-          <Route path="/" element={<Home />}></Route>
-          <Route path="/about" element={<About />}></Route>
-          <Route path="/shop" element={
-              <Shop 
-                items={items} 
-                handleIncreaseQuantityClick={handleIncreaseQuantityClick}
-                handleDecreaseQuantityClick={handleDecreaseQuantityClick}
-                handleRemoveClick={handleRemoveClick}
-              />}>
-          </Route>
-          <Route path="/cart" element={<Cart items={items} getTotalAmount={getTotalAmount} handleRemoveClick={handleRemoveClick} />} ></Route>
-        </Routes>
-    </div>
+  <>
+    <Navbar
+      items={items} 
+      getTotalItems={totalItems}
+      isOpen={isOpen}
+      openCart={openCart}
+      closeCart={closeCart}
+      handleItemUpdate={handleItemUpdate}
+    />
+    <Container className="mb-4">
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route 
+          path="/store" 
+          element={
+            <Store 
+              items={items} 
+              handleItemUpdate={handleItemUpdate} 
+            />} 
+        />
+        <Route path="/about" element={<About />} />
+      </Routes>
+    </Container>
+  </>
   )
 }
 
